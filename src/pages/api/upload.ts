@@ -11,7 +11,7 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
 
-  const hardCodedPath = '/Users/keivinc/Documents/sample_health_history_1/SampleWriteUp.pdf'
+  const hardCodedPath = '/Users/keivinc/Documents/sample_health_history_1/tony_stark_health_screen1.pdf'
   // let dataBuffer = fs.readFileSync('path to PDF file...');
   let dataBuffer = fs.readFileSync(hardCodedPath);
   let pdfData
