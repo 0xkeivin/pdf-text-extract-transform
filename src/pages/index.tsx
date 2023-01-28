@@ -5,13 +5,15 @@ import styles from "@/styles/Home.module.css";
 import { FileUpload } from "@/components/FileUpload";
 import axios from "axios";
 import React, { useEffect } from "react";
-import { Textarea } from "@chakra-ui/react";
+import { Textarea, Button } from "@chakra-ui/react";
 import { useState } from "react";
 import { ChangeEventHandler } from "react";
+import processText from "@/utils/openai"; '@utils/openai'
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   const [pdfText, setPdfText] = useState("");
+  const [openAiText, setOpenAiText] = useState("");
 
   const uploadHandler = (data: FileList | null) => {
     console.log(data);
@@ -24,6 +26,20 @@ export default function Home() {
         setPdfText("something went wrong :(");
       }
     });
+  };
+
+  const handleSubmit = async () => {
+    if (pdfText === "") {
+      console.log("nothing to submit");
+      return;
+    }
+    const processedText = await processText(pdfText);
+    if (processedText) {
+      setOpenAiText(processedText);
+    } else {
+      console.log("error");
+    }
+
   };
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     let inputValue = e.target.value;
@@ -51,7 +67,19 @@ export default function Home() {
         onChange={handleInputChange}
         size="xl"
         height={500}
+        width={800}
       />
+      <Textarea
+        placeholder="Placeholder"
+        value={openAiText}
+        // onChange={handleInputChange}
+        size="xl"
+        height={500}
+        width={800}
+        />
+        <Button
+        onClick={handleSubmit}
+        >Process OpenAI</Button>
     </>
   );
 }
