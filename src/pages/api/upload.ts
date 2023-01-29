@@ -1,23 +1,21 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from 'next'
-import fs from 'fs'
-import pdf from 'pdf-parse'
-type Data = {
-  data: string
+import type { NextApiRequest, NextApiResponse } from "next";
+import fs from "fs";
+import pdf from "pdf-parse";
+interface Data {
+  data: string;
 }
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-
-  const hardCodedPath = '/Users/keivinc/Documents/sample_health_history_1/tony_stark_health_screen1.pdf'
+  const hardCodedPath =
+    "/Users/keivinc/Documents/sample_health_history_1/tony_stark_health_screen1.pdf";
   // let dataBuffer = fs.readFileSync('path to PDF file...');
-  let dataBuffer = fs.readFileSync(hardCodedPath);
-  let pdfData
-  
-  const pdfResult = await pdf(dataBuffer).then(function (data:any): string {
+  const dataBuffer = fs.readFileSync(hardCodedPath);
 
+  const pdfResult = await pdf(dataBuffer).then(function (data: any): string {
     // number of pages
     console.log(data.numpages);
     // number of rendered pages
@@ -32,14 +30,12 @@ export default async function handler(
     // PDF text
     console.log(data.text);
 
-    return JSON.stringify(data.text)
-
+    return JSON.stringify(data.text);
   });
-  res.status(200).json({ data: pdfResult })
+  res.status(200).json({ data: pdfResult });
   // if (!pdfData) {
   //   res.status(500).json({ pdfdata: 'error' })
   // } else {
   //   res.status(200).json({ pdfdata: pdfResult })
   // }
 }
-

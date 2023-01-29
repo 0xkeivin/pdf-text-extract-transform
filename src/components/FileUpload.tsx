@@ -1,16 +1,16 @@
 import { Input, useMultiStyleConfig } from "@chakra-ui/react";
-import { ChangeEvent } from "react";
+import { type ChangeEvent } from "react";
 
-type FileUploadProps = {
+interface FileUploadProps {
   accept?: string;
   onFileUploaded?: (data: FileList | null) => void;
-};
+}
 
 export const FileUpload = ({ onFileUploaded, accept }: FileUploadProps) => {
   const styles = useMultiStyleConfig("Button", { variant: "outline" });
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
-    if (onFileUploaded) {
+    if (onFileUploaded != null) {
       onFileUploaded(event.target.files);
     }
   };
