@@ -15,8 +15,11 @@ export default async function handler(
   // let dataBuffer = fs.readFileSync('path to PDF file...');
   // const dataBuffer = fs.readFileSync(hardCodedPath);
   // take in a filepath
-  const filePath = req.query.filepath as string;
-
+  
+  // test 1 
+  // const filePath = req.query.filepath as string;
+  // test 2 
+  const filePath = req.body as string;
   console.log(`filePath: ${filePath}`)
   const dataBuffer = fs.readFileSync(filePath);
 

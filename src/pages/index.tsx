@@ -70,7 +70,8 @@ export default function Home() {
       if (finalPath) {
         setPdfFilePath(finalPath);
         console.log(`pdfFilePath: ${pdfFilePath}`)
-        await axios.get(`/api/extract-pdf-text?filepath=${pdfFilePath}`).then((res) => {
+        // await axios.get(`/api/extract-pdf-text?filepath=${pdfFilePath}`).then((res) => {
+        await axios.post(`/api/extractpdf`,pdfFilePath ).then((res) => {
             if (res.status === 200) {
               console.log("success");
               setPdfText(res.data.data);
