@@ -16,10 +16,12 @@ import { type RowData } from "../../file-hasher-types";
 
 export interface FlexibleFormTableProps {
   onChange?: ({ rowTitles, rowValues }: RowData) => any;
+  rowData: RowData; // allow the table to be pre-populated with data
 }
 
 export const FlexibleFormTable = ({
   onChange = () => {},
+  rowData,
 }: FlexibleFormTableProps) => {
   /**
    * Combining these 2 states into an object would be a lot cleaner,
@@ -27,8 +29,11 @@ export const FlexibleFormTable = ({
    * of either states will trigger a rerendering of everything as well.
    * Isolating it should restrict rendering slightly (Although not much).
    */
-  const [rowTitles, setRowTitles] = useState([""]);
-  const [rowValues, setRowValues] = useState([""]);
+  // const [rowTitles, setRowTitles] = useState([""]);
+
+  const [rowTitles, setRowTitles] = useState(rowData.rowTitles);
+  // const [rowValues, setRowValues] = useState([""]);
+  const [rowValues, setRowValues] = useState(rowData.rowValues);
 
   const addEditableRow = () => {
     setRowTitles((prevRowTitles) => prevRowTitles.concat(""));

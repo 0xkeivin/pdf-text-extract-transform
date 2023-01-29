@@ -5,14 +5,27 @@ import React, { useEffect, useState } from "react";
 import { Textarea, Button, useToast } from "@chakra-ui/react";
 import processText from "@/utils/openai";
 import { FlexibleFormTable } from "@/components/tables";
-
+import parseJSON from "@/utils/parseJSON";
+interface RowDatas {
+  rowTitles: string[];
+  rowValues: string[];
+}
 
 export default function Home() {
   const [pdfText, setPdfText] = useState("");
   const [openAiText, setOpenAiText] = useState("");
   const [loadingOpenAI, setlLoadingOpenAI] = useState<boolean>(false);
   const toast = useToast();
+  // form panel
+  const [rowData, setRowData] = useState<RowDatas>({
+    rowTitles: [],
+    rowValues: [],
+  });
 
+  const onDataChange = (data: RowDatas) => {
+    setRowData(data);
+    // console.log(`row data: ${JSON.stringify(rowData)}`);
+  };
   const uploadHandler = async (data: FileList | null) => {
     console.log(data);
     await axios.get("/api/upload").then((res) => {
@@ -25,16 +38,26 @@ export default function Home() {
       }
     });
   };
-
+  // map JSONObj to rowData
+  const mapJSONObjToRowData = (jsonString: string): RowDatas => {
+    const jsonObj = parseJSON(jsonString);
+    jsonObj.forEach((obj) => {
+      rowData.rowTitles.push(obj.key);
+      rowData.rowValues.push(obj.value);
+    });
+    console.log(`rowData: ${JSON.stringify(rowData)}`);
+    return rowData;
+  };
+  // handlers
   const handleSubmit = async () => {
     setlLoadingOpenAI(true);
     if (pdfText === "") {
       console.log("nothing to submit");
       return;
     }
-    const processedText = await processText(pdfText);
-    if (processedText) {
-      setOpenAiText(processedText);
+    const { respText, respStatus } = await processText(pdfText);
+    if (respStatus) {
+      setOpenAiText(respText);
       toast({
         title: "Success",
         description: "OpenAI has processed your text",
@@ -42,6 +65,11 @@ export default function Home() {
         duration: 2000,
         isClosable: true,
       });
+      // map json to rowData
+      console.log(respText);
+      const rowData = mapJSONObjToRowData(respText);
+      setRowData(rowData);
+      console.log(`rowData: ${JSON.stringify(rowData)}`);
     } else {
       console.log("error");
       toast({
@@ -102,9 +130,7 @@ export default function Home() {
         width={800}
       />
       <Button onClick={handleSubmit}>Process OpenAI</Button>
-      <FlexibleFormTable
-
-      />
+      <FlexibleFormTable onChange={onDataChange} rowData={rowData} />
     </>
   );
 }
