@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.4.9",
@@ -22,12 +23,24 @@
     "dotenv": "^16.0.3",
     "eslint": "8.32.0",
     "eslint-config-next": "13.1.6",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-unused-imports": "^2.0.0",
     "framer-motion": "^8.5.4",
     "next": "13.1.6",
     "openai": "^3.1.0",
     "pdf-parse": "^1.1.1",
+    "prettier": "^2.8.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "typescript": "4.9.4"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.49.0",
+    "eslint-config-standard-with-typescript": "^33.0.0",
+    "eslint-plugin-eslint-plugin": "^5.0.8",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^15.6.1",
+    "eslint-plugin-promise": "^6.1.1"
   }
 }
