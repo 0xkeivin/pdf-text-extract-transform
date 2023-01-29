@@ -1,43 +1,36 @@
-import { ChangeEvent, useState } from 'react';
+import { Input, useMultiStyleConfig } from "@chakra-ui/react";
+import { type ChangeEvent } from "react";
 
-function FileUploadSingle() {
-  const [file, setFile] = useState<File>();
+interface FileUploadProps {
+  accept?: string;
+  onFileUploaded?: (data: FileList | null) => void;
+}
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFile(e.target.files[0]);
+export const FileUpload = ({ onFileUploaded, accept }: FileUploadProps) => {
+  const styles = useMultiStyleConfig("Button", { variant: "outline" });
+
+  const onChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (onFileUploaded != null) {
+      onFileUploaded(event.target.files);
     }
-  };
-
-  const handleUploadClick = () => {
-    if (!file) {
-      return;
-    }
-
-    // 👇 Uploading the file using the fetch API to the server
-    fetch('https://httpbin.org/post', {
-      method: 'POST',
-      body: file,
-      // 👇 Set headers manually for single file upload
-      headers: {
-        'content-type': file.type,
-        'content-length': `${file.size}`, // 👈 Headers need to be a string
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => console.log(data))
-      .catch((err) => console.error(err));
   };
 
   return (
-    <div>
-      <input type="file" onChange={handleFileChange} />
-
-      <div>{file && `${file.name} - ${file.type}`}</div>
-
-      <button onClick={handleUploadClick}>Upload</button>
-    </div>
+    <Input
+      type="file"
+      accept={accept}
+      sx={{
+        padding: "10px",
+        height: "auto",
+        "::file-selector-button": {
+          border: "none",
+          outline: "none",
+          height: "auto",
+          mr: 2,
+          ...styles,
+        },
+      }}
+      onChange={onChange}
+    />
   );
-}
-
-export default FileUploadSingle;
+};
