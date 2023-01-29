@@ -4,12 +4,16 @@ const configuration = new Configuration({
   apiKey: process.env.NEXT_PUBLIC_OPENAI_API,
 });
 const openai = new OpenAIApi(configuration);
+interface Resp {
+  respText: string;
+  respStatus: boolean;
+}
 
-const processText = async (text: string): Promise<string> => {
+const processText = async (text: string): Promise<Resp> => {
   const response = await openai.createCompletion({
     model: "text-davinci-003",
     prompt:
-      "Generate a medical health summary in the form of key value pairs in JSON output\n" +
+      'Generate a JSON output in the structure of [{"key":key,"value": value}] for the identified fields \n' +
       text,
     temperature: 0.7,
     max_tokens: 512,
@@ -20,10 +24,21 @@ const processText = async (text: string): Promise<string> => {
     stop: ["/##"],
   });
   console.log(response.data.choices[0].text);
-  if (response.data.choices[0].text === undefined) {
-    return "Error";
+
+  if (
+    response.status !== 200 ||
+    response.data.choices[0].text === "" ||
+    response.data.choices[0].text === undefined
+  ) {
+    return {
+      respText: "Error",
+      respStatus: false,
+    };
   }
-  return response.data.choices[0].text;
+  return {
+    respText: response.data.choices[0].text,
+    respStatus: true,
+  };
 };
 
 export default processText;
