@@ -5,15 +5,18 @@ import styles from "@/styles/Home.module.css";
 import { FileUpload } from "@/components/FileUpload";
 import axios from "axios";
 import React, { useEffect } from "react";
-import { Textarea, Button } from "@chakra-ui/react";
+import { Textarea, Button, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import { ChangeEventHandler } from "react";
-import processText from "@/utils/openai"; '@utils/openai'
+import processText from "@/utils/openai";
+("@utils/openai");
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   const [pdfText, setPdfText] = useState("");
   const [openAiText, setOpenAiText] = useState("");
+  const [loadingOpenAI, setlLoadingOpenAI] = useState<boolean>(false);
+  const toast = useToast();
 
   const uploadHandler = (data: FileList | null) => {
     console.log(data);
@@ -29,6 +32,7 @@ export default function Home() {
   };
 
   const handleSubmit = async () => {
+    setlLoadingOpenAI(true);
     if (pdfText === "") {
       console.log("nothing to submit");
       return;
@@ -36,20 +40,42 @@ export default function Home() {
     const processedText = await processText(pdfText);
     if (processedText) {
       setOpenAiText(processedText);
+      toast({
+        title: "Success",
+        description: "OpenAI has processed your text",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
     } else {
       console.log("error");
+      toast({
+        title: "Failed",
+        description: "OpenAI failed us :(",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
     }
-
   };
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     let inputValue = e.target.value;
     setPdfText(inputValue);
   };
   useEffect(() => {
-    axios.get("/api/hello").then((res) => {
-      console.log(res.data);
-    });
-  }, []);
+    // axios.get("/api/hello").then((res) => {
+    //   console.log(res.data);
+    // });
+    if (loadingOpenAI) {
+      toast({
+        title: "Processing",
+        description: "OpenAI is processing your text",
+        status: "info",
+        duration: 2000,
+        isClosable: true,
+      });
+    }
+  }, [loadingOpenAI]);
 
   return (
     <>
@@ -76,10 +102,15 @@ export default function Home() {
         size="xl"
         height={500}
         width={800}
-        />
-        <Button
+      />
+      <Button
         onClick={handleSubmit}
-        >Process OpenAI</Button>
+        onChange={() => {
+          null;
+        }}
+      >
+        Process OpenAI
+      </Button>
     </>
   );
 }
