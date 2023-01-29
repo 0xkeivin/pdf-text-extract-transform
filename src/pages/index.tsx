@@ -4,6 +4,8 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Textarea, Button, useToast } from "@chakra-ui/react";
 import processText from "@/utils/openai";
+import { FlexibleFormTable } from "@/components/tables";
+
 
 export default function Home() {
   const [pdfText, setPdfText] = useState("");
@@ -100,6 +102,9 @@ export default function Home() {
         width={800}
       />
       <Button onClick={handleSubmit}>Process OpenAI</Button>
+      <FlexibleFormTable
+
+      />
     </>
   );
 }
