@@ -10,10 +10,15 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  const hardCodedPath =
-    "/Users/keivinc/Documents/sample_health_history_1/tony_stark_health_screen1.pdf";
+  // const hardCodedPath =
+  //   "/Users/keivinc/Documents/sample_health_history_1/tony_stark_health_screen1.pdf";
   // let dataBuffer = fs.readFileSync('path to PDF file...');
-  const dataBuffer = fs.readFileSync(hardCodedPath);
+  // const dataBuffer = fs.readFileSync(hardCodedPath);
+  // take in a filepath
+  const filePath = req.query.filepath as string;
+
+  console.log(`filePath: ${filePath}`)
+  const dataBuffer = fs.readFileSync(filePath);
 
   const pdfResult = await pdf(dataBuffer).then(function (data: any): string {
     // number of pages

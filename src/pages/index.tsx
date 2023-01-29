@@ -6,15 +6,30 @@ import { Textarea, Button, useToast } from "@chakra-ui/react";
 import processText from "@/utils/openai";
 import { FlexibleFormTable } from "@/components/tables";
 import parseJSON from "@/utils/parseJSON";
+import { json } from "stream/consumers";
 interface RowDatas {
   rowTitles: string[];
   rowValues: string[];
 }
 
+interface PdfFormObj {
+  files: {
+    pdfFile: {
+      size: number;
+      filepath: string;
+      newFilename: string;
+      mimetype: string;
+      mtime: string;
+      originalFilename: string;
+    }
+  };
+}
 export default function Home() {
   const [pdfText, setPdfText] = useState("");
   const [openAiText, setOpenAiText] = useState("");
   const [loadingOpenAI, setlLoadingOpenAI] = useState<boolean>(false);
+  const [pdfFilePath, setPdfFilePath] = useState<string>('')
+  
   const toast = useToast();
   // form panel
   const [rowData, setRowData] = useState<RowDatas>({
@@ -28,16 +43,48 @@ export default function Home() {
   };
   const uploadHandler = async (data: FileList | null) => {
     console.log(data);
-    await axios.get("/api/upload").then((res) => {
-      if (res.status === 200) {
-        console.log("success");
-        setPdfText(res.data.data);
-      } else {
-        console.log("error");
-        setPdfText("something went wrong :(");
+    // await axios.get("/api/upload").then((res) => {
+    //   if (res.status === 200) {
+    //     console.log("success");
+    //     setPdfText(res.data.data);
+    //   } else {
+    //     console.log("error");
+    //     setPdfText("something went wrong :(");
+    //   }
+    // });
+    // test /uploadfile
+    const selectedFile = data?.item(0);
+    try {
+      if (!selectedFile) {
+        return;
       }
-    });
+      const formData = new FormData();
+      formData.append("pdfFile", selectedFile);
+      const { data } = await axios.post("/api/uploadfile", formData);
+      const jsonVal = JSON.stringify(data);
+      console.log(jsonVal);
+      const jsonObj: PdfFormObj = JSON.parse(jsonVal);
+      // final path 
+      const finalPath = jsonObj.files.pdfFile.filepath;
+      console.log(finalPath);
+      if (finalPath) {
+        setPdfFilePath(finalPath);
+        console.log(`pdfFilePath: ${pdfFilePath}`)
+        await axios.get(`/api/extract-pdf-text?filepath=${pdfFilePath}`).then((res) => {
+            if (res.status === 200) {
+              console.log("success");
+              setPdfText(res.data.data);
+            } else {
+              console.log("error");
+              setPdfText("something went wrong :(");
+            }
+          });
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
+
   // map JSONObj to rowData
   const mapJSONObjToRowData = (jsonString: string): RowDatas => {
     const jsonObj = parseJSON(jsonString);
