@@ -28,7 +28,7 @@ export default function Home() {
   };
   const uploadHandler = async (data: FileList | null) => {
     console.log(data);
-    const url2 = "http://localhost:5001/uploadfile";
+    const url2 = "http://localhost:5001/processpdf";
     const axiosConfig = {
       headers: {
         "Content-Type": "multipart/form-data",
