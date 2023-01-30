@@ -28,7 +28,17 @@ export default function Home() {
   };
   const uploadHandler = async (data: FileList | null) => {
     console.log(data);
-    await axios.get("/api/upload").then((res) => {
+    const url2 = "http://localhost:5001/uploadfile";
+    const axiosConfig = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    };
+    const singleFile = data?.item(0);
+    const formData = new FormData();
+    formData.append("file", singleFile as Blob);
+    console.log(singleFile);
+    await axios.post(url2, formData, axiosConfig).then((res) => {
       if (res.status === 200) {
         console.log("success");
         setPdfText(res.data.data);
@@ -37,6 +47,15 @@ export default function Home() {
         setPdfText("something went wrong :(");
       }
     });
+    // await axios.get("/api/upload").then((res) => {
+    //   if (res.status === 200) {
+    //     console.log("success");
+    //     setPdfText(res.data.data);
+    //   } else {
+    //     console.log("error");
+    //     setPdfText("something went wrong :(");
+    //   }
+    // });
   };
   // map JSONObj to rowData
   const mapJSONObjToRowData = (jsonString: string): RowDatas => {
@@ -89,6 +108,12 @@ export default function Home() {
     // axios.get("/api/hello").then((res) => {
     //   console.log(res.data);
     // });
+
+    const url = "http://localhost:5001/";
+    axios.get(url).then((res) => {
+      console.log(res.data);
+    });
+
     if (loadingOpenAI) {
       toast({
         title: "Processing",
