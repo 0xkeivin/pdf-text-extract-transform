@@ -28,7 +28,8 @@ export default function Home() {
   };
   const uploadHandler = async (data: FileList | null) => {
     console.log(data);
-    const url2 = "http://localhost:5001/processpdf";
+    // const url2 = "http://localhost:5001/processpdf";
+    const url2 = "http://13.229.230.171/processpdf";
     const axiosConfig = {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -42,6 +43,7 @@ export default function Home() {
       if (res.status === 200) {
         console.log("success");
         setPdfText(res.data.data);
+        console.log(pdfText)
       } else {
         console.log("error");
         setPdfText("something went wrong :(");
