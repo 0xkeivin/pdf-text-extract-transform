@@ -6,6 +6,8 @@ import { Textarea, Button, useToast } from "@chakra-ui/react";
 import processText from "@/utils/openai";
 import { FlexibleFormTable } from "@/components/tables";
 import parseJSON from "@/utils/parseJSON";
+import pdfJsLib, {getDocument} from 'pdfjs-dist';
+
 interface RowDatas {
   rowTitles: string[];
   rowValues: string[];
@@ -36,6 +38,13 @@ export default function Home() {
       },
     };
     const singleFile = data?.item(0);
+    const buffer = await singleFile?.arrayBuffer();
+    if(buffer === undefined) throw new Error("failed to upload file");
+    const pdfData = await getDocument(buffer).promise;
+    const pdfPage = await pdfData.getPage(0)
+    const textData = await pdfPage.getTextContent()
+    textData.items.map(i => console.log(i))
+    console.dir(pdfData)
     const formData = new FormData();
     formData.append("file", singleFile as Blob);
     console.log(singleFile);
