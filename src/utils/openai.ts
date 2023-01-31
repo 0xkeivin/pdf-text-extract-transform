@@ -10,11 +10,14 @@ interface Resp {
 }
 
 const processText = async (text: string): Promise<Resp> => {
+  // Limit the size of the text to 2048 characters
+  text = text.slice(0, 513)
   const response = await openai.createCompletion({
     model: "text-davinci-003",
-    prompt:
-      'Generate a JSON output in the structure of [{"key":key,"value": value}] for the identified fields \n' +
-      text,
+    // prompt:
+    //   'Generate a JSON output in the structure of [{"key":key,"value": value}] for the identified fields \n' +
+    //   text,
+    prompt: 'Generate a JSON output in the structure of [{"key":key,"value": value}] for the identified fields where the key values are:\n- name\n- date of birth\n- treatments\n- medicines\n- allergies\n- x-ray results\n- hostpital admission\n- hostpital discharge\n- lifestyle\n\'' + text + '/##',
     temperature: 0.7,
     max_tokens: 512,
     top_p: 1,
