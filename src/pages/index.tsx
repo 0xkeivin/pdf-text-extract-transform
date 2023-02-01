@@ -91,7 +91,9 @@ export default function Home() {
       rows: [],
     };
     for (const obj of parsedObj) {
-      tableData.rows.push([obj.key, obj.value]);
+      if (obj.value !== "null") {
+        tableData.rows.push([obj.key, obj.value]);
+      }
     }
     console.log(`tableData: ${JSON.stringify(tableData)} `);
     return tableData;
@@ -129,6 +131,25 @@ export default function Home() {
       });
     }
   };
+  const handleGetPdf = async () => {
+    const url = "http://localhost:5001/getpdf";
+    const fileName = "tony_stark.pdf";
+
+    await axios.get(url).then((res) => {
+      if (res.status === 200) {
+        console.log("success");
+        // const url = window.URL.createObjectURL(new Blob([res.data]));
+        // const link = document.createElement("a");
+        // link.href = url;
+        // link.setAttribute("download", "file.pdf");
+        // document.body.appendChild(link);
+        // link.click();
+      } else {
+        console.log("error");
+        console.log("something went wrong :(");
+      }
+    });
+  };
   const handleGeneratePdf = async () => {
     const url2 = "http://localhost:5001/createpdf";
     const axiosConfig = {
@@ -145,8 +166,9 @@ export default function Home() {
     // const tableDataJson = JSON.stringify(tableData);
     // console.log(`tableDataJson:${tableDataJson}`);
     // console.log(`${tableDataJson}`);
-
-    const pdfTableData = createPDFTableFromOpenAIResp("tony_stark", openAiText);
+    const pdfName = "custom1"
+    const pdfTableData = createPDFTableFromOpenAIResp(
+      pdfName, openAiText);
     await axios
       .post(
         url2,
@@ -159,15 +181,7 @@ export default function Home() {
       .then((res) => {
         if (res.status === 200) {
           console.log("createpdf success");
-          // console.log(res.data.data);
-          console.log(res)
-          const blob = new Blob([res.data], {
-            type: "application/pdf",
-          });
-          const link = document.createElement("a");
-          link.href = URL.createObjectURL(blob);
-          link.download = "tony_stark1.pdf";
-          link.click();
+          
         } else {
           console.log("something went wrong with /createpdf :(");
         }
@@ -229,6 +243,7 @@ export default function Home() {
       />
       <Button onClick={handleSubmit}>Process OpenAI</Button>
       <Button onClick={handleGeneratePdf}>Generate PDF</Button>
+      <Button onClick={handleGetPdf}>Download PDF</Button>
       <FlexibleFormTable onChange={onDataChange} rowData={rowData} />
     </>
   );
